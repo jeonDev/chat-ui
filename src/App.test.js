@@ -1,8 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders learn react link', () => {
+test('renders auth screen', () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+
+  expect(screen.getByRole('heading', { name: /대화 시작/i })).toBeInTheDocument();
+  expect(screen.getAllByRole('button', { name: '로그인' })[1]).toHaveAttribute('type', 'submit');
+  expect(screen.getByRole('button', { name: '회원가입' })).toBeInTheDocument();
 });
