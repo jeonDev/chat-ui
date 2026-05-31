@@ -21,13 +21,13 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (token) => {
-    localStorage.setItem('accessToken', token);
     try {
       const decoded = jwtDecode(token);
+      localStorage.setItem('accessToken', token);
       setUser(toAuthenticatedUser(decoded));
     } catch (e) {
-      // Mock user if token is invalid but we want to proceed (for dev)
-      setUser({ id: 1, loginId: 'mockUser', name: 'Mock User' });
+      localStorage.removeItem('accessToken');
+      throw e;
     }
   };
 

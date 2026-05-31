@@ -11,14 +11,15 @@ export const ChatSocketProvider = ({ children }) => {
   const socketRef = useRef(null);
 
   useEffect(() => {
-    if (!user?.id) {
+    const accessToken = localStorage.getItem('accessToken');
+    if (!user?.id || !accessToken) {
       setConnectionStatus('idle');
       setMessagesByRoom({});
       return undefined;
     }
 
     setConnectionStatus('connecting');
-    const socket = new WebSocket(`${WS_URL}?memberId=${encodeURIComponent(user.id)}`);
+    const socket = new WebSocket(WS_URL, ['jwt', accessToken]);
     socketRef.current = socket;
 
     socket.onopen = () => setConnectionStatus('open');

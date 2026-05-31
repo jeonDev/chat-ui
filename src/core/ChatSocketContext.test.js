@@ -10,8 +10,9 @@ class MockWebSocket {
   static OPEN = 1;
   static instances = [];
 
-  constructor(url) {
+  constructor(url, protocols) {
     this.url = url;
+    this.protocols = protocols;
     this.readyState = MockWebSocket.OPEN;
     this.send = jest.fn();
     this.close = jest.fn();
@@ -34,6 +35,7 @@ const SocketConsumer = () => {
 beforeEach(() => {
   MockWebSocket.instances = [];
   global.WebSocket = MockWebSocket;
+  localStorage.setItem('accessToken', 'test-jwt');
 });
 
 test('connects after authentication and exchanges room messages', () => {
@@ -44,7 +46,8 @@ test('connects after authentication and exchanges room messages', () => {
   );
 
   const socket = MockWebSocket.instances[0];
-  expect(socket.url).toBe('ws://localhost:8090/ws/chat?memberId=7');
+  expect(socket.url).toBe('ws://localhost:8090/ws/chat');
+  expect(socket.protocols).toEqual(['jwt', 'test-jwt']);
 
   fireEvent.click(screen.getByRole('button', { name: 'send' }));
   expect(socket.send).toHaveBeenCalledWith(JSON.stringify({

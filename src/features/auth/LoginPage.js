@@ -19,17 +19,10 @@ export const LoginPage = () => {
         login(accessToken);
         navigate('/');
       } else {
-        console.warn('Backend returned null token. Mocking login for development.');
-        login('mock-token-for-dev');
-        navigate('/');
+        setError('로그인 토큰을 받지 못했습니다. 서버 상태를 확인해주세요.');
       }
     } catch (err) {
       setError('로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.');
-      if (err.code === 'ERR_NETWORK') {
-         console.warn('Network error. Mocking login for development.');
-         login('mock-token-for-dev');
-         navigate('/');
-      }
     }
   };
 
