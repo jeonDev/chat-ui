@@ -6,6 +6,7 @@ export const SignUpPage = () => {
   const [loginId, setLoginId] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -13,7 +14,7 @@ export const SignUpPage = () => {
     e.preventDefault();
     setError('');
     try {
-      await authApi.join(loginId, password, name);
+      await authApi.join(loginId, password, name, phone);
       alert('회원가입이 완료되었습니다. 로그인해주세요.');
       navigate('/login');
     } catch (err) {
@@ -68,6 +69,19 @@ export const SignUpPage = () => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="이름을 입력하세요"
+            required
+          />
+        </label>
+        <label>
+          핸드폰 번호
+          <input
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            maxLength={100}
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="010-1234-5678"
             required
           />
         </label>

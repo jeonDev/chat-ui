@@ -9,8 +9,8 @@ export const chatApi = {
     const response = await apiClient.get(`/api/v1/rooms/${roomId}/messages`);
     return response.data;
   },
-  createDirectRoom: async (targetMemberId) => {
-    const response = await apiClient.post('/api/v1/rooms/direct', { targetMemberId });
+  createDirectRoom: async (partnerMemberId) => {
+    const response = await apiClient.post('/api/v1/rooms/direct', { partnerMemberId });
     return response.data;
   },
 };
