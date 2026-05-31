@@ -1,8 +1,8 @@
 import apiClient from '../../api/ApiClient';
 
 export const chatApi = {
-  getRooms: async (memberId) => {
-    const response = await apiClient.get(`/api/v1/rooms`, { params: { memberId } });
+  getRooms: async () => {
+    const response = await apiClient.get('/api/v1/rooms');
     return response.data;
   },
   getMessages: async (roomId) => {

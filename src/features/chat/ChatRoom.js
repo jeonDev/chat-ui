@@ -10,23 +10,26 @@ export const ChatRoom = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [inputText, setInputText] = useState('');
+  const [historyStatus, setHistoryStatus] = useState('loading');
+  const [sendError, setSendError] = useState('');
   const messagesEndRef = useRef(null);
   
-  const { messages, setMessages, isConnected, sendMessage } = useChatSocket(user?.id, roomId);
+  const { messages, setMessages, isConnected, sendMessage } = useChatSocket(roomId);
 
   useEffect(() => {
     if (roomId) {
+      setHistoryStatus('loading');
       chatApi.getMessages(roomId)
-        .then(setMessages)
+        .then(messages => {
+          setMessages(messages);
+          setHistoryStatus('success');
+        })
         .catch(err => {
           console.error('Failed to load history', err);
-          setMessages([
-            { messageId: 1, roomId: Number(roomId), senderMemberId: 2, content: { text: '안녕하세요!' }, sentAt: new Date().toISOString() },
-            { messageId: 2, roomId: Number(roomId), senderMemberId: user?.id, content: { text: '반가워요!' }, sentAt: new Date().toISOString() },
-          ]);
+          setHistoryStatus('error');
         });
     }
-  }, [roomId, setMessages, user?.id]);
+  }, [roomId, setMessages]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -35,7 +38,12 @@ export const ChatRoom = () => {
   const handleSend = (e) => {
     e.preventDefault();
     if (!inputText.trim()) return;
-    sendMessage(inputText);
+    const sent = sendMessage(inputText.trim());
+    if (!sent) {
+      setSendError('소켓 연결 후 메시지를 보낼 수 있습니다.');
+      return;
+    }
+    setSendError('');
     setInputText('');
   };
 
@@ -54,6 +62,8 @@ export const ChatRoom = () => {
       </header>
 
       <div className="content-scroll message-list">
+        {historyStatus === 'loading' ? <div className="status-text loading">채팅 내용을 불러오는 중입니다.</div> : null}
+        {historyStatus === 'error' ? <div className="status-text error">채팅 내용을 불러오지 못했습니다.</div> : null}
         {messages.map((msg, idx) => {
           const isMine = msg.senderMemberId === user?.id;
           return (
@@ -68,6 +78,7 @@ export const ChatRoom = () => {
         <div ref={messagesEndRef} />
       </div>
 
+      {sendError ? <div className="status-text error chat-send-error">{sendError}</div> : null}
       <form className="composer" onSubmit={handleSend} style={{ margin: '18px' }}>
         <input 
           type="text" 

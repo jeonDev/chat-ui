@@ -12,13 +12,7 @@ export const AuthProvider = ({ children }) => {
     if (token) {
       try {
         const decoded = jwtDecode(token);
-        // Assuming the backend JWT has 'sub' as loginId and 'id' as memberId
-        // If not, we might need a separate /me endpoint
-        setUser({
-          id: decoded.id || 1, // Fallback for now since backend is TODO
-          loginId: decoded.sub,
-          name: decoded.name || decoded.sub,
-        });
+        setUser(toAuthenticatedUser(decoded));
       } catch (e) {
         localStorage.removeItem('accessToken');
       }
@@ -30,11 +24,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('accessToken', token);
     try {
       const decoded = jwtDecode(token);
-      setUser({
-        id: decoded.id || 1,
-        loginId: decoded.sub,
-        name: decoded.name || decoded.sub,
-      });
+      setUser(toAuthenticatedUser(decoded));
     } catch (e) {
       // Mock user if token is invalid but we want to proceed (for dev)
       setUser({ id: 1, loginId: 'mockUser', name: 'Mock User' });
@@ -54,3 +44,17 @@ export const AuthProvider = ({ children }) => {
 };
 
 export const useAuth = () => useContext(AuthContext);
+
+const toAuthenticatedUser = (decoded) => {
+  const memberId = Number(decoded.sub);
+
+  if (!Number.isFinite(memberId) || memberId <= 0) {
+    throw new Error('JWT subject must be a valid member ID.');
+  }
+
+  return {
+    id: memberId,
+    loginId: decoded.loginId || '',
+    name: decoded.name || '',
+  };
+};

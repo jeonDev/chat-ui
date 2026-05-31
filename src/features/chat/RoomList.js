@@ -12,13 +12,13 @@ export const RoomList = () => {
 
   useEffect(() => {
     if (user?.id) {
-      chatApi.getRooms(user.id)
+      chatApi.getRooms()
         .then(setRooms)
         .catch(err => {
           console.error(err);
           setRooms([
-            { id: 1, type: 'DIRECT', name: '홍길동과의 대화', lastMessage: '안녕하세요!' },
-            { id: 2, type: 'GROUP', name: '자바 스터디', lastMessage: '열공합시다.' },
+            { roomId: 1, roomType: 'DIRECT', name: '홍길동과의 대화', lastMessage: '안녕하세요!' },
+            { roomId: 2, roomType: 'GROUP', name: '자바 스터디', lastMessage: '열공합시다.' },
           ]);
         })
         .finally(() => setLoading(false));
@@ -47,15 +47,15 @@ export const RoomList = () => {
         ) : (
           rooms.map(room => (
             <button 
-              key={room.id} 
-              onClick={() => handleRoomClick(room.id)}
+              key={room.roomId}
+              onClick={() => handleRoomClick(room.roomId)}
               className="room-row"
             >
               <div className="avatar">
                 {room.name?.[0] || 'C'}
               </div>
               <div className="row-main">
-                <strong>{room.name || `채팅방 ${room.id}`}</strong>
+                <strong>{room.name || `채팅방 ${room.roomId}`}</strong>
                 <span>{room.lastMessage || '메시지가 없습니다.'}</span>
               </div>
               <ChevronRight className="chevron" size={20} />
